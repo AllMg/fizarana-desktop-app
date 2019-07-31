@@ -2,10 +2,13 @@ package program;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -46,21 +49,25 @@ public class Program extends Application {
 		textPort.setFill(textIP.getFill());
 		textPort.setStyle(textIP.getStyle());
 		
-		TextField textFieldIP = new TextField();
-		TextField textFieldPort = new TextField();
+		TextField textFieldIP = new TextField(InetAddress.getLocalHost().getHostAddress());
+		textFieldIP.setEditable(false);
+		textFieldIP.setFocusTraversable(false);
+		TextField textFieldPort = new TextField("9898");
 		
 		Button button = new Button("Je valide");
 	    GridPane.setHalignment(button, HPos.RIGHT);
 	    
 	    StackPane stackPane = new StackPane();
 	    stackPane.setMinSize(300, 100);
-	    stackPane.setStyle("-fx-border-radius: 10px;-fx-border-color: #ff0000;-fx-font-size: 13px;");
+	    stackPane.setVisible(false);
 	    
 	    Label labelError = new Label("Impossible de lancer le partage");
 	    labelError.setTextFill(Color.valueOf("#ff0000"));
+	    labelError.setVisible(false);
 	    Label labelSuccess = new Label("Tapez IP:Port dans la bare d'adresse\nd'un navigateur pour voir");
-	    labelSuccess.setTextFill(Color.valueOf("#33cc00"));
+	    labelSuccess.setTextFill(Color.valueOf("aliceblue"));
 	    labelSuccess.setTextAlignment(TextAlignment.CENTER);
+	    labelSuccess.setVisible(false);
 		
 	    gridPaneField.add(textIP, 0, 0);
 	    gridPaneField.add(textPort, 0, 1);
@@ -73,6 +80,57 @@ public class Program extends Application {
 	    
 	    gridPane.add(gridPaneField, 0, 0);
 	    gridPane.add(stackPane, 0, 1);
+	    
+	    button.setOnAction(new EventHandler<ActionEvent>(){
+
+			@Override
+			public void handle(ActionEvent actionEvent) {
+				try {
+					serverSocket = new ServerSocket(Integer.valueOf(textFieldPort.getText()));
+					
+					labelError.setVisible(false);
+				    stackPane.setStyle("-fx-border-radius: 10px;-fx-border-color: aliceblue;-fx-font-size: 13px;");
+				    stackPane.setVisible(true);
+				    
+				    String hostAddress = serverSocket.getInetAddress().getHostAddress();
+				    hostAddress = hostAddress.compareTo("0.0.0.0") == 0 ? "127.0.0.1" : hostAddress;
+				    labelSuccess.setText(labelSuccess.getText().replace("IP", hostAddress).replace("Port", String.valueOf(serverSocket.getLocalPort())));
+				    labelSuccess.setVisible(true);
+				    
+				    textFieldPort.setEditable(false);
+				    textFieldPort.setFocusTraversable(false);
+				    
+				    ((Button) actionEvent.getSource()).setVisible(false);
+				    
+				    new Thread(new Runnable(){
+
+						@Override
+						public void run() {
+							long rankStart = -999999999;
+							while(true){
+								WebServer webServer;
+								try {
+									webServer = new WebServer(serverSocket.accept(), rankStart);
+									(new Thread(webServer)).start();
+								} catch (IOException e) {
+									e.printStackTrace();
+									break;
+								}
+								rankStart++;
+							}
+						}
+					}).start();
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				    labelSuccess.setVisible(false);
+					stackPane.setStyle("-fx-border-radius: 10px;-fx-border-color: #ff0000;-fx-font-size: 13px;");
+					stackPane.setVisible(true);
+					labelError.setVisible(true);
+				}
+			}
+			
+	    });
 		
 		Scene scene = new Scene(gridPane);
 	       
@@ -115,20 +173,7 @@ public class Program extends Application {
 	public static void main(String[] args) {
 		initTextEncoding();
 		
-		long rankStart = -999999999;
-		try {
-			serverSocket = new ServerSocket(9191);
-			
-			Application.launch(args);
-			
-			while(true){
-				WebServer webServer = new WebServer(serverSocket.accept(), rankStart);
-				(new Thread(webServer)).start();
-				rankStart++;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Application.launch(args);
 	}
 
 }
