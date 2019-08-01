@@ -29,7 +29,7 @@ public class Program extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		GridPane gridPane = new GridPane();
-		gridPane.setMinSize(550, 400);
+		gridPane.setMinSize(550, 300);
 		gridPane.setVgap(15); 
 	    gridPane.setHgap(15);  
 		gridPane.setAlignment(Pos.CENTER);
@@ -55,6 +55,8 @@ public class Program extends Application {
 		TextField textFieldPort = new TextField("9898");
 		
 		Button button = new Button("Je valide");
+		button.setTextFill(Color.valueOf("aliceblue"));
+		button.setStyle("-fx-background-color: #2d2d52;-fx-font-size: 16px;");
 	    GridPane.setHalignment(button, HPos.RIGHT);
 	    
 	    StackPane stackPane = new StackPane();
@@ -121,7 +123,7 @@ public class Program extends Application {
 						}
 					}).start();
 
-				} catch (IOException e) {
+				} catch (IOException | NumberFormatException e) {
 					e.printStackTrace();
 				    labelSuccess.setVisible(false);
 					stackPane.setStyle("-fx-border-radius: 10px;-fx-border-color: #ff0000;-fx-font-size: 13px;");

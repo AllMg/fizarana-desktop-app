@@ -128,8 +128,7 @@ public class WebServer implements Runnable {
 	protected void executePostRequest() throws IOException{
 		System.out.println("executePostRequest");
 		if(postParam.get("isFolder").compareTo("Y") == 0){
-			ClassLoader classLoader = getClass().getClassLoader();
-			sendPageResponse(postParam.get("fullPath"), classLoader);
+			createPageResponse(postParam.get("fullPath"));
 		}
 		else{
 			sendFileData(postParam.get("fullPath"));
@@ -165,24 +164,23 @@ public class WebServer implements Runnable {
 	 * */
 	protected void executeGetRequest() throws IOException{
 		System.out.println("executeGetRequest");
-		ClassLoader classLoader = getClass().getClassLoader();
 		if(isCSS){ // si le requête est de récupere le fichier css
-			InputStream inputStreamCss = classLoader.getResourceAsStream("resources/" + cssName);
+			InputStream inputStreamCss = new FileInputStream("resources" + File.separator + cssName);
 			byte[] dataCss = readInputData(inputStreamCss);
 			sendResponse("text/css", null, dataCss);
 		}
 		else if(isJS){ // si le requête est de récupere le fichier js
-			InputStream inputStreamJs = classLoader.getResourceAsStream("resources/" + jsName);
+			InputStream inputStreamJs = new FileInputStream("resources" + File.separator + jsName);
 			byte[] dataJs = readInputData(inputStreamJs);
 			sendResponse("application/javascript", null, dataJs);
 		}
 		else if(isPNG){ // si le requête est de récupere le fichier png (icon)
-			InputStream inputStreamPng = classLoader.getResourceAsStream("resources/" + pngName);
+			InputStream inputStreamPng = new FileInputStream("resources" + File.separator + pngName);
 			byte[] dataPng = readInputData(inputStreamPng);
 			sendResponse("image/png", null, dataPng);
 		}
 		else{ // autrement on retourne la page d'accueil (racine de dossier)
-			sendPageResponse(null, classLoader);
+			createPageResponse(null);
 		}
 	}
 	
@@ -191,11 +189,11 @@ public class WebServer implements Runnable {
 	 * donc pour renvoyer la page web
 	 * 'root' est le chemin du dossier (peut être null)
 	 * */
-	protected void sendPageResponse(String root, ClassLoader classLoader) throws IOException{
+	protected void createPageResponse(String root) throws IOException{
 		File[] files = FolderUtil.getFolderList(root);
-		InputStream inputStreamPage = classLoader.getResourceAsStream("resources/page.html");
-		InputStream inputStreamFolder = classLoader.getResourceAsStream("resources/page-folder-component.html");
-		InputStream inputStreamHistory = classLoader.getResourceAsStream("resources/page-root-component.html");
+		InputStream inputStreamPage = new FileInputStream("resources"+File.separator+"page.html");
+		InputStream inputStreamFolder = new FileInputStream("resources"+File.separator+"page-folder-component.html");
+		InputStream inputStreamHistory = new FileInputStream("resources"+File.separator+"page-root-component.html");
 		String page = readHtmlFile(inputStreamPage);
 		String folderComponent = readHtmlFile(inputStreamFolder);
 		String folderHistory = readHtmlFile(inputStreamHistory);
