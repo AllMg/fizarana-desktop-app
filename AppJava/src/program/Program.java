@@ -94,7 +94,7 @@ public class Program extends Application {
 				    stackPane.setStyle("-fx-border-radius: 10px;-fx-border-color: aliceblue;-fx-font-size: 13px;");
 				    stackPane.setVisible(true);
 				    
-				    String hostAddress = serverSocket.getInetAddress().getHostAddress();
+				    String hostAddress = textFieldIP.getText();
 				    hostAddress = hostAddress.compareTo("0.0.0.0") == 0 ? "127.0.0.1" : hostAddress;
 				    labelSuccess.setText(labelSuccess.getText().replace("IP", hostAddress).replace("Port", String.valueOf(serverSocket.getLocalPort())));
 				    labelSuccess.setVisible(true);
