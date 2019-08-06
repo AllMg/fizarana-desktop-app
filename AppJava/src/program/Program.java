@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -139,6 +140,7 @@ public class Program extends Application {
 		stage.setTitle("Fizarana"); 
 		stage.setScene(scene);
 		stage.setResizable(false);
+		stage.getIcons().add(new Image("file:resources/icon.png"));
 		stage.show();
 	}
 

@@ -29,6 +29,7 @@ public class WebServer implements Runnable {
 	protected boolean isCSS = false;
 	protected boolean isJS = false;
 	protected boolean isPNG = false;
+	protected boolean isICON = false;
 	protected String cssName;
 	protected String jsName;
 	protected String pngName;
@@ -90,7 +91,7 @@ public class WebServer implements Runnable {
 						cssName = "bootstrap.min.css";
 					}
 				}
-				if(line.contains(".js")){
+				else if(line.contains(".js")){
 					isJS = true;
 					if(line.contains("jquery.min")){
 						jsName = "jquery.min.js";
@@ -107,6 +108,9 @@ public class WebServer implements Runnable {
 					else{
 						pngName = "file.png";
 					}
+				}
+				else if(line.contains("favicon.ico")){
+					isICON = true;
 				}
 			}
 			else if(line.contains("Content-Length")){
@@ -178,6 +182,11 @@ public class WebServer implements Runnable {
 			InputStream inputStreamPng = new FileInputStream("resources" + File.separator + pngName);
 			byte[] dataPng = readInputData(inputStreamPng);
 			sendResponse("image/png", null, dataPng);
+		}
+		else if(isICON){ // si le requête est de récupere le fichier icon
+			InputStream inputStreamIco = new FileInputStream("resources" + File.separator + "favicon.ico");
+			byte[] data = readInputData(inputStreamIco);
+			sendResponse("image/x-icon", null, data);
 		}
 		else{ // autrement on retourne la page d'accueil (racine de dossier)
 			createPageResponse(null);
