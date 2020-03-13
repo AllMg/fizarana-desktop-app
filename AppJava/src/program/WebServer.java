@@ -3,14 +3,11 @@ package program;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
@@ -18,7 +15,6 @@ import java.util.Date;
 public class WebServer implements Runnable {
 	
 	protected Socket socket;
-	protected long rank; // utilisé pour la création de fichier temporaire si jamais deux requêtes s'exécutent en même temps (le nom du fichier est l'heure/Ms d'appel)
 	
 	protected BufferedReader bufferedReader;
 	protected PrintWriter printWriter;
@@ -35,9 +31,8 @@ public class WebServer implements Runnable {
 	protected String pngName;
 	protected PostParam postParam;
 	
-	WebServer(Socket socket, long rank){
+	WebServer(Socket socket){
 		this.socket = socket;
-		this.rank = rank;
 		strContentLength = "";
 	}
 
@@ -220,16 +215,7 @@ public class WebServer implements Runnable {
 	 * donc pour renvoyer la page web
 	 * */
 	protected void sendPageResponse(String page) throws IOException{
-		System.out.println("sendGetResponse");
-		File file = new File(System.currentTimeMillis()+""+rank+".html");
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-		bw.write(page);
-		bw.flush();
-		bw.close();
-		
-		sendResponse("text/html", file, null);
-		
-		file.delete();
+		sendResponse("text/html", page.getBytes("UTF-8"), null);
 	}
 	
 	/* 
@@ -237,7 +223,7 @@ public class WebServer implements Runnable {
 	 * si data est null alors file sera utilisé, sinon data sera toujours prioritaire
 	 * ne doit pas être utilisé pour renvoyer de gros données (mp3, mp4, ...)
 	 * */
-	protected void sendResponse(String contentType, File file, byte[] data) throws IOException{
+	protected void sendResponse(String contentType, byte[] pageBytes, byte[] data) throws IOException{
 		System.out.println("sendResponse => "+contentType+"\n");
 		printWriter = new PrintWriter(socket.getOutputStream());
 		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream());
@@ -246,7 +232,7 @@ public class WebServer implements Runnable {
 		printWriter.println("Date: " + new Date());
 		printWriter.println("Content-type: "+contentType);
 		if(data == null){
-			printWriter.println("Content-length: " + file.length());
+			printWriter.println("Content-length: " + pageBytes.length);
 		}
 		else{
 			printWriter.println("Content-length: " + data.length);
@@ -255,8 +241,7 @@ public class WebServer implements Runnable {
 		printWriter.flush();
 		
 		if(data == null){
-			data = readResponseData(file);
-			bufferedOutputStream.write(data, 0, (int) file.length());
+			bufferedOutputStream.write(pageBytes, 0, pageBytes.length);
 		}
 		else{
 			bufferedOutputStream.write(data, 0, data.length);

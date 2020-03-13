@@ -109,17 +109,15 @@ public class Program extends Application {
 
 						@Override
 						public void run() {
-							long rankStart = -999999999;
 							while(true){
 								WebServer webServer;
 								try {
-									webServer = new WebServer(serverSocket.accept(), rankStart);
+									webServer = new WebServer(serverSocket.accept());
 									(new Thread(webServer)).start();
 								} catch (IOException e) {
 									e.printStackTrace();
 									break;
 								}
-								rankStart++;
 							}
 						}
 					}).start();
