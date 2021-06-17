@@ -36,6 +36,7 @@ public class WebServer implements Runnable {
     protected boolean isJS = false;
     protected boolean isPNG = false;
     protected boolean isICON = false;
+    protected boolean requestHasRange = false;
     protected String cssName;
     protected String jsName;
     protected String pngName;
@@ -110,7 +111,10 @@ public class WebServer implements Runnable {
                     contentLength = Integer.valueOf(strContentLength);
                 }
             }
-        	System.out.println(line);
+            else if(line.contains("Range")) {
+            	requestHasRange = true;
+            }
+        	//System.out.println(line);
         }
     }
 
@@ -132,6 +136,7 @@ public class WebServer implements Runnable {
         printWriter.println("Server: Java HTTP Server from All : 1.0");
         printWriter.println("Date: " + new Date());
         printWriter.println("Content-type: application/force-download");
+        printWriter.println("Accept-Ranges: bytes");
         printWriter.println("Content-Disposition: inline; filename="+file.getName().replace(" ", "_"));
         printWriter.println("Content-length: " + file.length());
         printWriter.println();
