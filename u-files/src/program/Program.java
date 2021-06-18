@@ -6,19 +6,22 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
 
+import web.Session;
 import web.WebServer;
 
 public class Program {
 
 	static ServerSocket serverSocket;
+	static Session session;
 
 	static void run() throws IOException {
 		serverSocket = new ServerSocket(9898);
+		session = new Session();
 		System.out.println("Server runnig on " + InetAddress.getLocalHost().getHostAddress() + ":" + serverSocket.getLocalPort());
 		while (true) {
 			WebServer webServer;
 			try {
-				webServer = new WebServer(serverSocket.accept());
+				webServer = new WebServer(serverSocket.accept(), session);
 				(new Thread(webServer)).start();
 			} catch (IOException e) {
 				e.printStackTrace();
