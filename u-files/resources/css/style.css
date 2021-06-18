@@ -9,11 +9,19 @@ html, body{
     color: aliceblue;
 }
 
+.no-padding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 .root-container{
-    margin-top: 1%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /*margin-top: 1%;
     margin-left: 3%;
     margin-right: 3%;
-    border-radius: 10px;
+    border-radius: 10px;*/
     padding: 1%;
     background-color: #242442;
 }

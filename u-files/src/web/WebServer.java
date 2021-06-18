@@ -66,6 +66,9 @@ public class WebServer implements Runnable {
 				}
 			} else { // si method GET
 				SessionItem sessionItemIn = session.isIn(sessionItem);
+				/*
+				 * SessionItem permet de savoir si il y a eu une download
+				 * passe pour un download-manager par le navigateur */
 				if (sessionItemIn != null) {
 					sendFileData(sessionItemIn.getFullPath());
 				} else {
