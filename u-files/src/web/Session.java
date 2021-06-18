@@ -5,10 +5,16 @@ import java.util.List;
 
 public class Session {
 	
-	List<SessionItem> items;
+	private List<SessionItem> items;
 	
 	public Session() {
 		items = new ArrayList<> (0);
+	}
+	
+	public void add(SessionItem si) {
+		if(isIn(si) == null) {
+			items.add(si);
+		}
 	}
 	
 	public SessionItem isIn(SessionItem sessionItem) {

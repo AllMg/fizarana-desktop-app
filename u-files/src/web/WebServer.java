@@ -63,11 +63,9 @@ public class WebServer implements Runnable {
 					bufferedReader.read(bufferPost, 0, contentLength);
 					postParam = new PostParam(bufferPost);
 					executePostRequest(sessionItem);
-					System.out.println(sessionItem);
 				}
 			} else { // si method GET
 				SessionItem sessionItemIn = session.isIn(sessionItem);
-				System.out.println(sessionItemIn);
 				if (sessionItemIn != null) {
 					sendFileData(sessionItemIn.getFullPath());
 				} else {
@@ -127,7 +125,7 @@ public class WebServer implements Runnable {
 				}
 				sessionItem.setBoundary(boundary);
 			}
-			System.out.println(line);
+			//System.out.println(line);
 		}
 		return sessionItem;
 	}
@@ -137,7 +135,7 @@ public class WebServer implements Runnable {
 			createPageResponse(postParam.get("fullPath"));
 		} else {
 			sessionItem.setFullPath(postParam.get("fullPath"));
-			session.items.add(sessionItem);
+			session.add(sessionItem);
 			sendFileData(postParam.get("fullPath"));
 		}
 	}
