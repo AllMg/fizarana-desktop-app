@@ -128,19 +128,25 @@ public class WebServer implements Runnable {
 				}
 				sessionItem.setBoundary(boundary);
 			}
-			//System.out.println(line);
+			System.out.println(line);
 		}
 		return sessionItem;
 	}
 
 	protected void executePostRequest(SessionItem sessionItem) throws IOException {
-		if (postParam.get("isFolder").compareTo("Y") == 0) {
-			createPageResponse(postParam.get("fullPath"));
+		String isFolder = postParam.get("isFolder");
+		if(isFolder != null) {
+			if (isFolder.compareTo("Y") == 0) {
+				createPageResponse(postParam.get("fullPath"));
+			} else {
+				sessionItem.setFullPath(postParam.get("fullPath"));
+				session.add(sessionItem);
+				sendFileData(postParam.get("fullPath"));
+			}
 		} else {
-			sessionItem.setFullPath(postParam.get("fullPath"));
-			session.add(sessionItem);
-			sendFileData(postParam.get("fullPath"));
+			createPageResponse(null);
 		}
+		
 	}
 
 	protected void sendFileData(String fullPath) throws IOException {
