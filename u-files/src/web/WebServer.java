@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
 
+import program.JsonCreator;
 import program.PageCreator;
 import utils.AllUtil;
 import utils.FolderUtil;
@@ -128,7 +130,7 @@ public class WebServer implements Runnable {
 				}
 				sessionItem.setBoundary(boundary);
 			}
-			System.out.println(line);
+			// System.out.println(line);
 		}
 		return sessionItem;
 	}
@@ -137,16 +139,15 @@ public class WebServer implements Runnable {
 		String isFolder = postParam.get("isFolder");
 		if(isFolder != null) {
 			if (isFolder.compareTo("Y") == 0) {
-				createPageResponse(postParam.get("fullPath"));
+				createJSONResponse(postParam.get("fullPath"));
 			} else {
 				sessionItem.setFullPath(postParam.get("fullPath"));
 				session.add(sessionItem);
 				sendFileData(postParam.get("fullPath"));
 			}
 		} else {
-			createPageResponse(null);
+			createJSONResponse(null);
 		}
-		
 	}
 
 	protected void sendFileData(String fullPath) throws IOException {
@@ -231,6 +232,14 @@ public class WebServer implements Runnable {
 		inputStreamHistory.close();
 		inputStreamFolder.close();
 	}
+	
+	protected void createJSONResponse(String root) throws UnsupportedEncodingException, IOException {
+		File[] files = FolderUtil.getFolderList(root);
+		JsonCreator jsonCreator = new JsonCreator();
+		jsonCreator.createRootHistory(root);
+		jsonCreator.createFolderList(files);
+		sendJSONResponse(jsonCreator.getJSON());
+	}
 
 	/*
 	 * Methode appele si la requete n'est pas pour du CSS, JS, ... donc pour
@@ -238,6 +247,10 @@ public class WebServer implements Runnable {
 	 */
 	protected void sendPageResponse(String page) throws IOException {
 		sendResponse("text/html", page.getBytes("UTF-8"));
+	}
+	
+	protected void sendJSONResponse(String json) throws UnsupportedEncodingException, IOException {
+		sendResponse("text/plain", json.getBytes("UTF-8"));
 	}
 
 	/*

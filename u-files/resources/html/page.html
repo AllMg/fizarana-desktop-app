@@ -7,7 +7,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta name="author" content="All">
 	<title>u files</title>
-	<link type="text/css" rel="stylesheet" href="style.css">
+	<link type="text/css" rel="stylesheet" href="u.files.css">
 	<link type="text/css" rel="stylesheet" href="bootstrap.css">
 	<link rel="stylesheet" href="bootstrap.min.css">
 </head>
@@ -18,12 +18,13 @@
 			<div class="col-12 col-md-12 no-padding">
 				<div class="root-container">
 					<div class="directory">
-						<label for="btn-root">
+						<label class="clickable">
 							<span>Racine ></span>
-							<form action="" method="POST" class="invisible">
+							<span is-folder="Y" class="hidden-info"></span>
+							<!--form action="" method="POST" class="invisible">
 								<input type="text" name="isFolder" value="Y">
 								<button id="btn-root"></button>
-							</form>
+							</form-->
 						</label>
 						[rootHistory]
 					</div>
@@ -54,6 +55,7 @@
 <footer>
 	<script src="jquery.min.js"></script>
 	<script src="bootstrap.min.js"></script>
+	<script src="u.files.js"></script>
 </footer>
 
 </html>

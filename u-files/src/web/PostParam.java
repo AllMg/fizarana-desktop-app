@@ -45,7 +45,7 @@ public class PostParam {
         String split2;
         for(int i=0; i<lines.size(); i++){
             line = lines.get(i);
-        	System.out.println(line);
+        	//System.out.println(line);
             if(line.contains("Content-Disposition")){
                 split2 = line.split("name")[1];
                 key = split2.substring(2, split2.length() - 1);
