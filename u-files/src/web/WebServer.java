@@ -130,7 +130,7 @@ public class WebServer implements Runnable {
 				}
 				sessionItem.setBoundary(boundary);
 			}
-			// System.out.println(line);
+			//System.out.println(line);
 		}
 		return sessionItem;
 	}
@@ -250,7 +250,7 @@ public class WebServer implements Runnable {
 	}
 	
 	protected void sendJSONResponse(String json) throws UnsupportedEncodingException, IOException {
-		sendResponse("text/plain", json.getBytes("UTF-8"));
+		sendResponse("application/json", json.getBytes("UTF-8"));
 	}
 
 	/*

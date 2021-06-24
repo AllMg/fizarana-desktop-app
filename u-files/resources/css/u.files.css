@@ -22,14 +22,18 @@ html, body{
     background-color: #242442;
 }
 
-.directory > label{
+.directory label{
     cursor: pointer;
 }
 
-.directory > label:hover{
+.directory label:hover{
     color: white;
     font-weight: bold;
     text-decoration: underline;
+}
+
+#root-history label {
+    margin-left: 5px;
 }
 
 .hidden-info {
