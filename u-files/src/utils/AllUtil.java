@@ -36,5 +36,19 @@ public class AllUtil {
         }
         return false;
     }
+    
+    /*
+     * chaine est une chaine de caractere de la forme "95,65,47,12,...,n"
+     * la reponse est de la forme [95,65,47,12,...,n]*/
+    public static byte[] toByteArray(String chaine) {
+    	String[] split = chaine.split(",");
+    	byte[] bytes = new byte[split.length];
+    	int i = 0;
+    	for(String str : split) {
+    		bytes[i] = Byte.valueOf(str);
+    		i++;
+    	}
+    	return bytes;
+    }
 
 }

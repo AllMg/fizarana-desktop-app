@@ -88,7 +88,77 @@ class UFiles {
         });
     }
 
+    readFileData(file) {
+        var ufiles = this;
+        var filereader = new FileReader();
+        filereader.onprogress = (e) => {
+            console.log(e.loaded + " / " + e.total);
+        };
+        filereader.onload = (e) => {
+            var arrayBuffer = e.target.result;
+            var byteArray = new Int8Array(arrayBuffer);
+            for(var i=0; i<byteArray.length; i++){
+                if(byteArray[i] < -128 || byteArray[i] > 127) {
+                    console.log(byteArray[i]);
+                }
+            }
+            console.log("byteArray",byteArray);
+            ufiles.sendFileData(byteArray, file.name);
+        };
+        filereader.readAsArrayBuffer(file);
+    }
+
+    sendFileData(byteArray, filename) {
+        var formData = new FormData();
+        formData.append("fileName", filename);
+        formData.append("fileSize", byteArray.length);
+        formData.append("byteArray", byteArray);
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "json";
+        xhr.upload.onprogress = (e) => { console.log("Uploading", (e.loaded * 100 / e.total)); };
+        xhr.upload.onload = () => { console.log("response",xhr.response); };
+        xhr.upload.onabort = () => {
+            console.error('Upload cancelled.');
+        };
+        xhr.upload.onerror = () => {
+            console.error('Upload failed.');
+        };
+        xhr.open("POST", this.url);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        xhr.send(formData);
+    }
+
+    upload() {
+        var fileInput = document.getElementById("file-to-upload");
+        console.log("fileInput", fileInput.files);
+        if (fileInput.files.length > 0) {
+            var file = document.getElementById("file-to-upload").files[0];
+            console.log("file", file);
+            /*var formData = new FormData();
+            formData.append("isUpload", 1);
+            formData.append("fileName", file.name);
+            formData.append("file", file);*/
+            this.readFileData(file);
+            /*var xhr = new XMLHttpRequest();
+            xhr.upload.onprogress = (e) => { console.log("Uploading", (e.loaded * 100 / e.total)); };
+            xhr.upload.onload = () => { console.log(xhr.responseText); };
+            xhr.upload.onabort = () => {
+                console.error('Upload cancelled.');
+            };
+            xhr.upload.onerror = () => {
+                console.error('Upload failed.');
+            };
+            xhr.open("POST", this.url);
+            xhr.setRequestHeader("Content-Type", "application/octet-stream;" + file.name);
+            xhr.setRequestHeader("Content-Length", file.size);
+            xhr.send(file);*/
+        }
+    }
+
 };
 
 var ufiles = new UFiles();
 ufiles.reload();
+$("#btn-upload").click(function () {
+    ufiles.upload();
+});

@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,10 +42,12 @@ public class WebServer implements Runnable {
 	protected boolean isPNG = false;
 	protected boolean isICON = false;
 	protected boolean requestHasRange = false;
+	protected boolean isUpload = false;
 	protected String cssName;
 	protected String jsName;
 	protected String pngName;
 	protected PostParam postParam;
+	protected PostParamUpload postParamUpload;
 
 	public WebServer(Socket socket, Session ses) {
 		this.socket = socket;
@@ -61,16 +64,22 @@ public class WebServer implements Runnable {
 
 			if (!isGET) { // si method POST
 				if (contentLength > 0) {
-					char[] bufferPost = new char[contentLength];
-					bufferedReader.read(bufferPost, 0, contentLength);
-					postParam = new PostParam(bufferPost);
-					executePostRequest(sessionItem);
+					if (!isUpload) {
+						char[] bufferPost = new char[contentLength];
+						bufferedReader.read(bufferPost, 0, contentLength);
+						postParam = new PostParam(bufferPost);
+						executePostRequest(sessionItem);
+					} else {
+						postParamUpload = new PostParamUpload(bufferedReader);
+						receiveFileData();
+					}
 				}
 			} else { // si method GET
 				SessionItem sessionItemIn = session.isIn(sessionItem);
 				/*
-				 * SessionItem permet de savoir si il y a eu une download
-				 * passe pour un download-manager par le navigateur */
+				 * SessionItem permet de savoir si il y a eu une download passe pour un
+				 * download-manager par le navigateur
+				 */
 				if (sessionItemIn != null) {
 					sendFileData(sessionItemIn.getFullPath());
 				} else {
@@ -121,23 +130,64 @@ public class WebServer implements Runnable {
 				requestHasRange = true;
 			} else if (line.contains("Origin") || line.contains("origin")) {
 				sessionItem.setOrigin(line.substring(8));
-			} else if ((line.startsWith("Content-Type") || line.startsWith("content-type"))
-					&& line.contains("boundary")) {
-				for (char c : line.toCharArray()) {
-					if (AllUtil.isNumeric(c)) {
-						boundary += String.valueOf(c);
+			} else if (line.startsWith("Content-Type") || line.startsWith("content-type")) {
+				if (line.contains("application/octet-stream")) {
+					isUpload = true;
+				} else if (line.contains("boundary")) {
+					for (char c : line.toCharArray()) {
+						if (AllUtil.isNumeric(c)) {
+							boundary += String.valueOf(c);
+						}
 					}
+					sessionItem.setBoundary(boundary);
 				}
-				sessionItem.setBoundary(boundary);
 			}
-			//System.out.println(line);
+			System.out.println(line);
 		}
 		return sessionItem;
 	}
 
+	protected void receiveFileData() throws IOException {
+		BufferedOutputStream bufferedOutputStream = null;
+		try {
+			String home = System.getProperty("user.home");
+			File uploadFolder = new File(home + File.separator + "Downloads");
+			if (!uploadFolder.exists()) {
+				boolean folderIsCreated = uploadFolder.createNewFile();
+				if (!folderIsCreated) {
+					sendJSONResponse(
+							"{\"success\": false, \"message\": \"Impossible de créer le dossier de téléversement !\"}");
+				}
+			}
+			File file = new File(uploadFolder.getAbsolutePath() + File.separator + postParamUpload.get("fileName"));
+			bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+			long fileSize = Long.valueOf(postParamUpload.get("fileSize"));
+			int nbLu;
+			long totalRead = 0;
+			byte[] bytes = new byte[1024];
+			while ((nbLu = postParamUpload.getBytes(bufferedReader, bytes, totalRead, fileSize)) > 0) {
+				bufferedOutputStream.write(bytes, 0, nbLu);
+				totalRead += nbLu;
+				if (totalRead >= fileSize)
+					break;
+				System.out.println("nbLu: "+nbLu+" totalRead: "+totalRead);
+			}
+			System.out.println("nbLu: "+nbLu);
+			bufferedOutputStream.flush();
+			sendJSONResponse("{\"success\": true, \"message\": \"Téléversement du fichier terminé !\"}");
+		} catch (SocketException se) {
+			sendJSONResponse("{\"success\": false, \"message\": \"Espace insuffisant pour le téléversement !\"}");
+			se.printStackTrace();
+		} finally {
+			if (bufferedOutputStream != null) {
+				bufferedOutputStream.close();
+			}
+		}
+	}
+
 	protected void executePostRequest(SessionItem sessionItem) throws IOException {
 		String isFolder = postParam.get("isFolder");
-		if(isFolder != null) {
+		if (isFolder != null) {
 			if (isFolder.compareTo("Y") == 0) {
 				createJSONResponse(postParam.get("fullPath"));
 			} else {
@@ -232,7 +282,7 @@ public class WebServer implements Runnable {
 		inputStreamHistory.close();
 		inputStreamFolder.close();
 	}
-	
+
 	protected void createJSONResponse(String root) throws UnsupportedEncodingException, IOException {
 		File[] files = FolderUtil.getFolderList(root);
 		JsonCreator jsonCreator = new JsonCreator();
@@ -248,8 +298,9 @@ public class WebServer implements Runnable {
 	protected void sendPageResponse(String page) throws IOException {
 		sendResponse("text/html", page.getBytes("UTF-8"));
 	}
-	
+
 	protected void sendJSONResponse(String json) throws UnsupportedEncodingException, IOException {
+		System.out.println(json);
 		sendResponse("application/json", json.getBytes("UTF-8"));
 	}
 

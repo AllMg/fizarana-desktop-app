@@ -32,6 +32,13 @@ html, body{
     text-decoration: underline;
 }
 
+.container-upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+
 #root-history label {
     margin-left: 5px;
 }
