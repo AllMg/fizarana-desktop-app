@@ -3,6 +3,9 @@ html, body{
     margin: 0;
     width: 100%;
     font-family: Arial, Helvetica, sans-serif;
+    --color-1: #242442;
+    --color-2: #2d2d52;
+    --color-3: #363663;
 }
 
 .a-container{
@@ -19,7 +22,7 @@ html, body{
     top: 0;
     z-index: 100;
     padding: 1%;
-    background-color: #242442;
+    background-color: var(--color-1);
 }
 
 .directory label{
@@ -39,6 +42,35 @@ html, body{
     padding: 20px;
 }
 
+#label-btn-upload {
+    cursor: pointer;
+}
+
+#label-btn-upload:hover{
+    font-weight: bold;
+}
+
+#uploading-info {
+    display: none;
+}
+
+#uploading-progress {
+    width: 100%;
+    min-width: 100px;
+    height: 7px;
+    background-color: var(--color-2);
+}
+
+#uploading-progress div {
+    width: 50%;
+    height: 7px;
+    background-color: aliceblue;
+}
+
+#file-to-upload {
+    display: none;
+}
+
 #root-history label {
     margin-left: 5px;
 }
@@ -49,21 +81,21 @@ html, body{
 
 .list-container{
     margin-top: 1%;
-    margin-left: 3%;
-    margin-right: 3%;
+    margin-left: 1%;
+    margin-right: 1%;
     border-radius: 10px;
     padding: 1%;
-    background-color: #242442;
+    background-color: var(--color-1);
 }
 
 .folder-file{
     width: 100%;
-    background-color: #2d2d52;
+    background-color: var(--color-2);
     border-radius: 15px;
 }
 
 .folder-file:hover{
-    background-color: #363663
+    background-color: var(--color-3)
 }
 
 .folder-file > label{

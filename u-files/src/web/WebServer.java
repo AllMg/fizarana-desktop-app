@@ -142,7 +142,7 @@ public class WebServer implements Runnable {
 					sessionItem.setBoundary(boundary);
 				}
 			}
-			System.out.println(line);
+			//System.out.println(line);
 		}
 		return sessionItem;
 	}
@@ -157,6 +157,7 @@ public class WebServer implements Runnable {
 				if (!folderIsCreated) {
 					sendJSONResponse(
 							"{\"success\": false, \"message\": \"Impossible de créer le dossier de téléversement !\"}");
+					return;
 				}
 			}
 			File file = new File(uploadFolder.getAbsolutePath() + File.separator + postParamUpload.get("fileName"));
@@ -170,9 +171,7 @@ public class WebServer implements Runnable {
 				totalRead += nbLu;
 				if (totalRead >= fileSize)
 					break;
-				System.out.println("nbLu: "+nbLu+" totalRead: "+totalRead);
 			}
-			System.out.println("nbLu: "+nbLu);
 			bufferedOutputStream.flush();
 			sendJSONResponse("{\"success\": true, \"message\": \"Téléversement du fichier terminé !\"}");
 		} catch (SocketException se) {
@@ -300,7 +299,7 @@ public class WebServer implements Runnable {
 	}
 
 	protected void sendJSONResponse(String json) throws UnsupportedEncodingException, IOException {
-		System.out.println(json);
+		//System.out.println(json);
 		sendResponse("application/json", json.getBytes("UTF-8"));
 	}
 

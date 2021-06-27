@@ -47,7 +47,7 @@ public class PostParamUpload {
 		String split2;
 		for (int i = 0; i < lines.size(); i++) {
 			line = lines.get(i);
-			System.out.println(line);
+			//System.out.println(line);
 			if (line.contains("Content-Disposition")) {
 				if (!line.contains("byteArray")) {
 					split2 = line.split("name")[1];
@@ -65,9 +65,7 @@ public class PostParamUpload {
 		int nbLu = 0;
 		while (bufferedReader.read(single) > -1) {
 			if (single[0] == '\r') {
-				System.out.println("fin de données");
 				if (arrayChar.length() > 0 && arrayChar != " ") {
-					System.out.println("r arrayChar: " + arrayChar);
 					bytes[nbLu] = Byte.valueOf(arrayChar);
 					arrayChar = "";
 					nbLu++;
@@ -77,7 +75,6 @@ public class PostParamUpload {
 					break;
 			} else if (single[0] != '\n') {
 				if (single[0] == ',') {
-					System.out.println("n arrayChar: " + arrayChar);
 					if (arrayChar.length() > 0) {
 						bytes[nbLu] = Byte.valueOf(arrayChar);
 						arrayChar = "";
