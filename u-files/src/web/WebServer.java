@@ -173,7 +173,7 @@ public class WebServer implements Runnable {
 					break;
 			}
 			bufferedOutputStream.flush();
-			sendJSONResponse("{\"success\": true, \"message\": \"Téléversement du fichier terminé !\"}");
+			sendJSONResponse("{\"success\": true, \"message\": \"Téléversement du fichier [ "+postParamUpload.get("fileName")+" ] terminé !\"}");
 		} catch (SocketException se) {
 			sendJSONResponse("{\"success\": false, \"message\": \"Espace insuffisant pour le téléversement !\"}");
 			se.printStackTrace();

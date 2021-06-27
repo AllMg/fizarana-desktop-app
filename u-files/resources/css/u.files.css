@@ -127,3 +127,43 @@ html, body{
 .invisible{
     display: none;
 }
+
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: var(--color-3);
+    color: #fff;
+    text-align: center;
+    padding: 16px;
+    position: fixed;
+    z-index: 100;
+    right: 1%;
+    bottom: 30px;
+    border-radius: 8px;
+  }
+  
+  #snackbar.show {
+    visibility: visible;
+    -webkit-animation: snackbar-fadein 0.5s, snackbar-fadeout 0.5s 5.5s;
+    animation: snackbar-fadein 0.5s, snackbar-fadeout 0.5s 5.5s;
+  }
+  
+  @-webkit-keyframes snackbar-fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @keyframes snackbar-fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @-webkit-keyframes snackbar-fadeout {
+    from {bottom: 30px; opacity: 1;} 
+    to {bottom: 0; opacity: 0;}
+  }
+  
+  @keyframes snackbar-fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  }

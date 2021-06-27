@@ -144,6 +144,12 @@ class UFiles {
         console.log("response", response);
         $("#label-btn-upload").show();
         $("#uploading-info").hide();
+        var snackbar = document.getElementById("snackbar");
+        snackbar.innerHTML = response.message;
+        snackbar.className = "show";
+        setTimeout(function () { 
+            snackbar.className = snackbar.className.replace("show", ""); 
+        }, 6000);
     }
 
 };
